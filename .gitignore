@@ -1,0 +1,9 @@
+.idea
+.DS_Store
+build/
+dist/
+*.code-workspace
+
+*.out
+*.output
+*.log
