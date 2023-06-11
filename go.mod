@@ -7,6 +7,7 @@ require (
 	github.com/lixvbnet/sysproxy v0.1.0
 	github.com/lqqyt2423/go-mitmproxy v1.6.1
 	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17
+	howett.net/plist v1.0.0
 )
 
 require (
