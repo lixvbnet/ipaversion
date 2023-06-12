@@ -40,9 +40,13 @@ func (c *ChangeHtml) Request(f *proxy.Flow) {
 	url := req.URL
 	//fmt.Println("----- (On Request) ----")
 	//fmt.Println(url.String())
+
 	if strings.Contains(url.String(), targetUrlSubstr) {
-		mu.Lock()	// we only want to run the following code ONCE!
-		//if strings.Contains(url.String(), "localhost:8443") {
+		// we only want to run the function code ONCE!
+		if !mu.TryLock() {
+			return
+		}
+
 		headerCopy := maps.Clone(f.Request.Header)
 		bodyCopy := bytes.Clone(f.Request.Body)
 
