@@ -1,4 +1,4 @@
-package util
+package ipaversion
 
 import (
 	"bytes"

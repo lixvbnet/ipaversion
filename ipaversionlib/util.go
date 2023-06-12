@@ -1,4 +1,4 @@
-package util
+package ipaversion
 
 func Min(x, y int) int {
 	if x < y {
