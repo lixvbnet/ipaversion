@@ -32,10 +32,6 @@ var (
 	END   = flag.Int("end", math.MaxInt, "versionIDs index range [start, end)")
 )
 
-const host, port = "127.0.0.1", 8080
-
-var systemProxy = sysproxy.New()
-
 func main() {
 	flag.Usage = func() {
 		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [options]\n", Name)
@@ -171,16 +167,29 @@ func main() {
 }
 
 
+const host, port = "127.0.0.1", 8080
+var systemProxy sysproxy.SysProxy
+
 func turnOnProxy() {
 	fmt.Println("Turn on system proxy...")
+	if systemProxy == nil {
+		systemProxy = sysproxy.New()
+	}
 	systemProxy.On(host, port)
 }
 
 func turnOffProxy() {
 	fmt.Println("Turn off system proxy...")
+	if systemProxy == nil {
+		fmt.Println("Skip. As systemProxy is nil.")
+		return
+	}
 	systemProxy.Off(host, port)
 }
 
 func showProxy() {
+	if systemProxy == nil {
+		systemProxy = sysproxy.New()
+	}
 	systemProxy.Show()
 }
