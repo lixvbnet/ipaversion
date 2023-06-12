@@ -70,23 +70,24 @@ func main() {
 
 	if !*S {
 		turnOnProxy()
-		// turn off proxy upon normal quitting
+		// do cleanup when error happens
 		defer func() {
+			if err := recover(); err != nil {
+				fmt.Printf("[WARN] Recovered from main: %v\n", err)
+				turnOffProxy()
+			}
+		}()
+
+		// do cleanup upon CTRL-C or other system interrupt signal
+		c := make(chan os.Signal)
+		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+		go func() {
+			<-c
+			fmt.Println("\ncleanup...")
 			turnOffProxy()
+			os.Exit(1)
 		}()
 	}
-
-	// do cleanup upon CTRL-C or other system interrupt signal
-	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		fmt.Println("\ncleanup...")
-		if !*S {
-			turnOffProxy()
-		}
-		os.Exit(1)
-	}()
 
 	// lock when target url is matched; unlock when program exits
 	var mu sync.Mutex
@@ -94,6 +95,9 @@ func main() {
 	var done = make(chan bool)
 
 	// start server
+	var p *proxy.Proxy
+	var err error
+	defer p.Close()
 	go func() {
 		listenAddr := fmt.Sprintf(":%d", port)
 		opts := &proxy.Options{
@@ -101,7 +105,7 @@ func main() {
 			StreamLargeBodies: 1024 * 1024 * 5,
 		}
 
-		p, err := proxy.NewProxy(opts)
+		p, err = proxy.NewProxy(opts)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -120,13 +124,13 @@ func main() {
 	// wait until finish
 	ok := <-done
 	if !ok {
-		fmt.Printf("[ERROR] Error happend in the Addon.\n")
+		fmt.Printf("[ERROR] Error happened in the Addon.\n")
 	}
 
 	if !*S {
-		fmt.Println("Turn off system proxy...")
-		systemProxy.Off(host, port)
+		turnOffProxy()
 	}
+
 
 	//TODO:
 	//// Let user select one to download

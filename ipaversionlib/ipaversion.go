@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/lqqyt2423/go-mitmproxy/proxy"
 	"golang.org/x/exp/maps"
-	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -14,10 +13,6 @@ import (
 
 const targetUrlSubstr = "-buy.itunes.apple.com/WebObjects/MZBuy.woa/wa/buyProduct"
 
-var clientUserAgent = DefaultUserAgent
-var counter int64 = 0
-
-
 type Addon struct {
 	proxy.BaseAddon
 	Lock 				*sync.Mutex
@@ -25,8 +20,10 @@ type Addon struct {
 
 	Start				int
 	End					int
-
 	HistoryVersions 	[]*AppInfo		// This is query result. Do NOT change it from outside!
+
+	clientUserAgent     string
+	counter				int64
 }
 
 // replay the request with modified version ID
@@ -36,7 +33,7 @@ func (c *Addon) replayRequest(method, url string, header http.Header, body []byt
 			fmt.Printf("[WARN] Recovered from replayRequest [%d] (%s): %v\n", i, targetVersionID, err)
 		}
 	}()
-	atomic.AddInt64(&counter, 1)
+	atomic.AddInt64(&c.counter, 1)
 	// clone the request for every versionID
 	headerClone := maps.Clone(header)
 	bodyClone := bytes.Clone(body)
@@ -61,20 +58,28 @@ func (c *Addon) replayRequest(method, url string, header http.Header, body []byt
 	c.HistoryVersions = append(c.HistoryVersions, appInfo)
 	fmt.Printf("[%d] %s %s\n", i, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
-	//err = os.WriteFile("ReplayResponse"+strconv.Itoa(int(counter))+".xml", resBodyDecoded, 0744)
+	//err = os.WriteFile("ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
 	//if err != nil {
 	//	fmt.Println("[ERROR]", err)
 	//}
 }
 
 func (c *Addon) handleBuyRequest(f *proxy.Flow) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Printf("[WARN] Recovered from handleBuyRequest [%s]: %v\n", f.Request.URL.String(), err)
+			c.Done <- false
+		}
+	}()
 	req := f.Request
-
 	headerCopy := maps.Clone(f.Request.Header)
 	bodyCopy := bytes.Clone(f.Request.Body)
 
-	clientUserAgent = headerCopy.Get("User-Agent")
-	fmt.Println("User-Agent:", clientUserAgent)
+	c.clientUserAgent = headerCopy.Get("User-Agent")
+	if c.clientUserAgent == "" {
+		c.clientUserAgent = DefaultUserAgent
+	}
+	fmt.Println("User-Agent:", c.clientUserAgent)
 
 	//fmt.Println("Modifying request body..")
 	//f.Request.Body = bytes.ReplaceAll(f.Request.Body, []byte("<string>852645599</string>"), []byte("<string>846783668</string>"))
@@ -84,15 +89,16 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	defer client.CloseIdleConnections()
 	clonedRequest, err := CloneRequest(f.Request)
 	if err != nil {
-		fmt.Println("Failed to clone the request!")
-		log.Fatal("ERROR:", err)
+		panic("Failed to clone the request!")
 	}
-	res, _ := client.Do(clonedRequest)
+	res, err := client.Do(clonedRequest)
+	if err != nil {
+		panic("Failed to query all versionIDs!")
+	}
 	resBody, err := GzipDecodeReader(res.Body)
 	res.Body.Close()
 	if err != nil {
-		fmt.Println("Failed to decode response body!")
-		log.Fatal("ERROR:", err)
+		panic("Failed to decode response body!")
 	}
 	// get App info
 	latestAppInfo := GetAppInfo(resBody)
@@ -103,23 +109,27 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	versionIDs := GetAllAppVersionIDs(resBody)
 	fmt.Println("History versionIDs:\t", versionIDs)
 
-	// replay the request
-	fmt.Println("Replaying the request...")
-	fmt.Println()
+	// calculate index range
 	n := len(versionIDs)
 	start, end := c.Start, c.End
-	if start < 0 {			// if negative, then count from last
+	if start < 0 {					// if negative, then count from last
 		start = n + start
 	}
 	if end < 0 {
 		end = n + start
 	}
 	start, end = max(0, c.Start), min(n, c.End)
-	fmt.Printf("Index range: [%d, %d)\n", start, end)
-	if start >= end {
-		fmt.Println("Invalid range! Querying all versionIDs")
-		start, end = 0, n
+	if start != 0 || end != n {						// check custom index range
+		fmt.Printf("Index range: [%d, %d)\n", start, end)
+		if start >= end {
+			fmt.Println("Invalid range! Querying all versionIDs")
+			start, end = 0, n
+		}
 	}
+
+	// replay the request
+	fmt.Println("Replaying the request...")
+	fmt.Println()
 	for i := start; i < end; i++ {
 		versionID := versionIDs[i]
 		c.replayRequest(req.Method, req.URL.String(), headerCopy, bodyCopy, latestAppInfo.SoftwareVersionExternalIdentifier, versionID, i, client)
@@ -151,7 +161,7 @@ func (c *Addon) Response(f *proxy.Flow) {
 	//fmt.Println("----- On Response ----")
 	//fmt.Println(f.Request.URL.String())
 	//if strings.Contains(f.Request.URL.String(), targetUrlSubstr) {
-	//	atomic.AddInt64(&counter, 1)
+	//	atomic.AddInt64(&c.counter, 1)
 	//	responseBodyClone := bytes.Clone(f.Response.Body)
 	//	responseBodyDecoded, err := GzipDecode(responseBodyClone)
 	//	if err != nil {
@@ -159,7 +169,7 @@ func (c *Addon) Response(f *proxy.Flow) {
 	//		fmt.Println("ERROR:", err)
 	//	}
 	//	// write response body to file
-	//	err = os.WriteFile("response"+strconv.Itoa(int(counter))+".xml", responseBodyDecoded, 0744)
+	//	err = os.WriteFile("response"+strconv.Itoa(int(c.counter))+".xml", responseBodyDecoded, 0744)
 	//	if err != nil {
 	//		fmt.Println("[ERROR]", err)
 	//	}

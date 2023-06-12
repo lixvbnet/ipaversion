@@ -54,7 +54,7 @@ func DownloadApp(app *AppInfo, userAgent string) (filename string, err error) {
 	fmt.Printf("Direct link: %s\n", app.URL)
 	fmt.Printf("Downloading %s %s (%s) to file [%s]...\n", app.BundleDisplayName, app.BundleShortVersionString, app.SoftwareVersionExternalIdentifier, filename)
 	// TODO:
-	err = DownloadFile(app.URL, filename, "")
+	err = DownloadFile(app.URL, filename, userAgent)
 	if err != nil {
 		fmt.Println(err)
 		return filename, err
