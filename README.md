@@ -1,6 +1,6 @@
 # ipaversion
 
-MITM utility for querying iOS App history versions.
+MITM utility for querying & downloading history versions of iOS apps.
 
 
 ![ipaversion_001](_image/ipaversion_01.jpg)
