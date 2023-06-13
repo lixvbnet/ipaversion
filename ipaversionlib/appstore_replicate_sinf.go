@@ -7,12 +7,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"howett.net/plist"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"howett.net/plist"
 )
 
 // ApplyPatches creates iTunesMetadata.plist and appends to dst file.
@@ -84,8 +83,8 @@ func ReplicateSinf(sinfs []*Sinf, packagePath string) error {
 	defer zipReader.Close()
 
 	tmpPath := fmt.Sprintf("%s.tmp", packagePath)
-	tmpFile, err := os.OpenFile(tmpPath, os.O_CREATE|os.O_WRONLY, 0644)
-
+	//tmpFile, err := os.OpenFile(tmpPath, os.O_CREATE|os.O_WRONLY, 0644)
+	tmpFile, err := os.Create(tmpPath)
 	if err != nil {
 		return fmt.Errorf("failed to open file: %w", err)
 	}
@@ -118,10 +117,14 @@ func ReplicateSinf(sinfs []*Sinf, packagePath string) error {
 	} else {
 		err = replicateSinfFromInfo(*info, zipWriter, sinfs, bundleName)
 	}
-
 	if err != nil {
 		return fmt.Errorf("failed to replicate sinf: %w", err)
 	}
+
+	// must explicitly close the files before remove/rename
+	zipReader.Close()
+	zipWriter.Close()
+	tmpFile.Close()
 
 	err = os.Remove(packagePath)
 	if err != nil {
@@ -130,7 +133,7 @@ func ReplicateSinf(sinfs []*Sinf, packagePath string) error {
 
 	err = os.Rename(tmpPath, packagePath)
 	if err != nil {
-		return fmt.Errorf("failed to remove original file: %w", err)
+		return fmt.Errorf("failed to rename the tmp file: %w", err)
 	}
 
 	return nil

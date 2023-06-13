@@ -2,6 +2,7 @@ package ipaversion
 
 import (
 	"fmt"
+	"os"
 )
 
 // AppInfo includes all fields from DownloadItemResult, and
@@ -41,13 +42,30 @@ func GetAppInfo(data []byte) (*AppInfo, error) {
 
 func DownloadApp(app *AppInfo, userAgent string) (filename string, err error) {
 	filename = fmt.Sprintf("%s %s.ipa", app.BundleDisplayName, app.BundleShortVersionString)
-	fmt.Printf("Direct link: %s\n", app.URL)
-	fmt.Printf("Downloading %s %s (%s) to file [%s]...\n", app.BundleDisplayName, app.BundleShortVersionString, app.SoftwareVersionExternalIdentifier, filename)
-	// TODO:
-	err = DownloadFile(app.URL, filename, userAgent)
+	//fmt.Printf("Direct link: %s\n", app.URL)
+	fmt.Printf("Downloading %s %s (%v) to file [%s]...\n", app.BundleDisplayName, app.BundleShortVersionString, app.SoftwareVersionExternalIdentifier, filename)
+	tmpFile := fmt.Sprintf("%s.downloading", filename)
+	// download raw ipa to tmp
+	err = DownloadFile(app.URL, tmpFile, userAgent)
 	if err != nil {
-		fmt.Println(err)
 		return filename, err
+	}
+	// apply patches
+	fmt.Println("Apply patches...")
+	err = ApplyPatches(app.Metadata, tmpFile, filename)
+	if err != nil {
+		return filename, fmt.Errorf("Failed to apply patches: %v\n", err)
+	}
+	// replicate sinfs
+	fmt.Println("Replicate sinfs...")
+	err = ReplicateSinf(app.Sinfs, filename)
+	if err != nil {
+		return filename, fmt.Errorf("Failed to replicate sinfs: %v\n", err)
+	}
+	fmt.Println("Remove tmp files...")
+	err = os.Remove(tmpFile)	// NOT working!
+	if err != nil {
+		return filename, fmt.Errorf("Failed to remove tmp file: %v\n", err)
 	}
 	return filename, nil
 }

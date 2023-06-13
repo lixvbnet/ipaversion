@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"syscall"
 )
@@ -101,12 +102,13 @@ func main() {
 		log.Fatal(err)
 	}
 	// Add on
-	p.AddAddon(&ipaversion.Addon{
+	addon := &ipaversion.Addon{
 		Lock: &mu,
 		Done: done,
 		Start: *START,
 		End: *END,
-	})
+	}
+	p.AddAddon(addon)
 	// start proxy server
 	go func() {
 		log.Fatal(p.Start())
@@ -123,39 +125,39 @@ func main() {
 		turnOffProxy()
 	}
 
+	// Let user select one to download
+	var input string
+	for {
+		fmt.Printf("Enter index number to download, or enter -1 to exit: ")
+		_, err := fmt.Scanln(&input)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		selectedIndex, err := strconv.Atoi(input)
+		if err != nil {
+			fmt.Println("Invalid input.")
+			continue
+		}
 
-	//TODO:
-	//// Let user select one to download
-	//var input string
-	//for {
-	//	fmt.Printf("Enter index number to download, or enter -1 to exit: ")
-	//	_, err := fmt.Scanln(&input)
-	//	if err != nil {
-	//		fmt.Println(err)
-	//		continue
-	//	}
-	//	selectedIndex, err := strconv.Atoi(input)
-	//	if err != nil {
-	//		fmt.Println("Invalid input.")
-	//		continue
-	//	}
-	//
-	//	if selectedIndex < 0 {
-	//		break
-	//	}
-	//	if selectedIndex >= len(historyVersions) {
-	//		fmt.Println("Invalid input: index out of range.")
-	//		continue
-	//	}
-	//
-	//	selectedVersion := historyVersions[selectedIndex]
-	//	filename, err := util.DownloadApp(selectedVersion, clientUserAgent)
-	//	if err != nil {
-	//		continue
-	//	}
-	//	fmt.Printf("File [%s] saved.\n", filename)
-	//	break
-	//}
+		if selectedIndex < 0 {
+			break
+		}
+		historyVersions, clientUserAgent := addon.HistoryVersions, addon.ClientUserAgent
+		if selectedIndex >= len(historyVersions) {
+			fmt.Println("Invalid input: index out of range.")
+			continue
+		}
+
+		selectedVersion := historyVersions[selectedIndex]
+		filename, err := ipaversion.DownloadApp(selectedVersion, clientUserAgent)
+		if err != nil {
+			fmt.Println("[ERROR]", err)
+			continue
+		}
+		fmt.Printf("File [%s] saved.\n", filename)
+		break
+	}
 
 	// Exit when click Enter
 	fmt.Printf("Press [Enter] to quit: ")
