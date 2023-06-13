@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lqqyt2423/go-mitmproxy/proxy"
 	"golang.org/x/exp/maps"
+	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -21,16 +22,16 @@ type Addon struct {
 	Start				int
 	End					int
 	HistoryVersions 	[]*AppInfo		// This is query result. Do NOT change it from outside!
+	ClientUserAgent		string			// User-Agent extracted from client request headers. Do NOT change it from outside!
 
-	clientUserAgent     string
 	counter				int64
 }
 
 // replay the request with modified version ID
-func (c *Addon) replayRequest(method, url string, header http.Header, body []byte, latestVersionID, targetVersionID string, i int, client *http.Client) {
+func (c *Addon) replayRequest(method, url string, header http.Header, body []byte, latestVersionID, targetVersionID uint64, i int, client *http.Client) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Printf("[WARN] Recovered from replayRequest [%d] (%s): %v\n", i, targetVersionID, err)
+			fmt.Printf("[WARN] Recovered from replayRequest [%d] %v: %v\n", i, targetVersionID, err)
 		}
 	}()
 	atomic.AddInt64(&c.counter, 1)
@@ -38,8 +39,8 @@ func (c *Addon) replayRequest(method, url string, header http.Header, body []byt
 	headerClone := maps.Clone(header)
 	bodyClone := bytes.Clone(body)
 	// modify the cloned request
-	strOld := fmt.Sprintf("<string>%s</string>", latestVersionID)
-	strNew := fmt.Sprintf("<string>%s</string>", targetVersionID)
+	strOld := fmt.Sprintf("<string>%v</string>", latestVersionID)
+	strNew := fmt.Sprintf("<string>%v</string>", targetVersionID)
 	bodyClone = bytes.ReplaceAll(bodyClone, []byte(strOld), []byte(strNew))
 	reqClone, _ := http.NewRequest(method, url, bytes.NewReader(bodyClone))
 	reqClone.Header = headerClone
@@ -48,15 +49,20 @@ func (c *Addon) replayRequest(method, url string, header http.Header, body []byt
 
 	// handle the response
 	resBodyDecoded, err := GzipDecodeReader(resp.Body)
-	resp.Body.Close()
 	if err != nil {
-		fmt.Println("Failed to decode the response body!")
-		fmt.Println("ERROR:", err)
+		log.Panicln("Failed to decode the response body:", err)
+	}
+	err = resp.Body.Close()
+	if err != nil {
+		fmt.Println("[WARN] failed to close response body:", err)
 	}
 	// get versionID and versionStr
-	appInfo := GetAppInfo(resBodyDecoded)
+	appInfo, err := GetAppInfo(resBodyDecoded)
+	if err != nil {
+		log.Panicln("Failed to parse the app info:", err)
+	}
 	c.HistoryVersions = append(c.HistoryVersions, appInfo)
-	fmt.Printf("[%d] %s %s\n", i, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
+	fmt.Printf("[%d] %v %s\n", i, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
 	//err = os.WriteFile("ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
 	//if err != nil {
@@ -75,11 +81,11 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	headerCopy := maps.Clone(f.Request.Header)
 	bodyCopy := bytes.Clone(f.Request.Body)
 
-	c.clientUserAgent = headerCopy.Get("User-Agent")
-	if c.clientUserAgent == "" {
-		c.clientUserAgent = DefaultUserAgent
+	c.ClientUserAgent = headerCopy.Get("User-Agent")
+	if c.ClientUserAgent == "" {
+		c.ClientUserAgent = DefaultUserAgent
 	}
-	fmt.Println("User-Agent:", c.clientUserAgent)
+	fmt.Println("User-Agent:", c.ClientUserAgent)
 
 	//fmt.Println("Modifying request body..")
 	//f.Request.Body = bytes.ReplaceAll(f.Request.Body, []byte("<string>852645599</string>"), []byte("<string>846783668</string>"))
@@ -89,24 +95,30 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	defer client.CloseIdleConnections()
 	clonedRequest, err := CloneRequest(f.Request)
 	if err != nil {
-		panic("Failed to clone the request!")
+		log.Panicln("Failed to clone the request:", err)
 	}
 	res, err := client.Do(clonedRequest)
 	if err != nil {
-		panic("Failed to query all versionIDs!")
+		log.Panicln("Failed to query all versionIDs:", err)
 	}
 	resBody, err := GzipDecodeReader(res.Body)
-	res.Body.Close()
 	if err != nil {
-		panic("Failed to decode response body!")
+		log.Panicln("Failed to decode response body:", err)
+	}
+	err = res.Body.Close()
+	if err != nil {
+		fmt.Println("[WARN] failed to close res body:", err)
 	}
 	// get App info
-	latestAppInfo := GetAppInfo(resBody)
+	latestAppInfo, err := GetAppInfo(resBody)
+	if err != nil {
+		log.Panicln("Failed to parse latest app info:", err)
+	}
 	fmt.Println()
 	fmt.Printf("[%s] (%s)\n", latestAppInfo.ItemName, latestAppInfo.ArtistName)
 	fmt.Println("Latest version:\t\t", latestAppInfo.SoftwareVersionExternalIdentifier, latestAppInfo.BundleShortVersionString)
 	// get all history versionIDs
-	versionIDs := GetAllAppVersionIDs(resBody)
+	versionIDs := latestAppInfo.SoftwareVersionExternalIdentifiers
 	fmt.Println("History versionIDs:\t", versionIDs)
 
 	// calculate index range

@@ -90,32 +90,28 @@ func main() {
 	defer mu.Unlock()
 	var done = make(chan bool)
 
-	// start server
-	var p *proxy.Proxy
-	var err error
-	defer p.Close()
+	// create proxy server
+	listenAddr := fmt.Sprintf(":%d", port)
+	opts := &proxy.Options{
+		Addr:              listenAddr,
+		StreamLargeBodies: 1024 * 1024 * 5,
+	}
+	p, err := proxy.NewProxy(opts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Add on
+	p.AddAddon(&ipaversion.Addon{
+		Lock: &mu,
+		Done: done,
+		Start: *START,
+		End: *END,
+	})
+	// start proxy server
 	go func() {
-		listenAddr := fmt.Sprintf(":%d", port)
-		opts := &proxy.Options{
-			Addr:              listenAddr,
-			StreamLargeBodies: 1024 * 1024 * 5,
-		}
-
-		p, err = proxy.NewProxy(opts)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// Add on
-		p.AddAddon(&ipaversion.Addon{
-			Lock: &mu,
-			Done: done,
-			Start: *START,
-			End: *END,
-		})
-
 		log.Fatal(p.Start())
 	}()
+	defer p.Close()
 
 	// wait until finish
 	ok := <-done
