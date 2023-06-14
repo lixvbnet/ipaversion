@@ -30,5 +30,11 @@ func GetDownloadItemResult(data []byte) (*DownloadItemResult, error) {
 	if result.FailureType != "" {
 		return nil, fmt.Errorf("failureType: %s, customerMessage: %s", result.FailureType, result.CustomerMessage)
 	}
+	if len(result.Items) < 1 {
+		fmt.Printf("[DEBUG] data:\n%v\n", string(data))
+		fmt.Println("----------------------------------------")
+		fmt.Printf("[DEBUG] decoded result:\n%v\n", result)
+		return nil, fmt.Errorf("no items in the result")
+	}
 	return result.Items[0], nil
 }
