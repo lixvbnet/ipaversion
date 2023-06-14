@@ -11,28 +11,32 @@ MITM utility for querying & downloading history versions of iOS apps.
 
 ![ipaversion_02](_image/ipaversion_02.jpg)
 
-Download from [Releases](./releases) page.
-
 
 
 ## prerequisites
 
-1. Install [iTunes 12.6.5.3](https://secure-appldnld.apple.com/itunes12/091-87819-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A6/iTunes64Setup.exe) , login Apple ID, and trust & authorize the computer you are using.
+1. Install **iTunes 12.6.5** , login Apple ID, and trust & authorize the computer you are using.
+
+   - macOS: https://secure-appldnld.apple.com/itunes12/091-87821-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A/iTunes12.6.5.dmg
+   - Windows: https://secure-appldnld.apple.com/itunes12/091-87819-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A6/iTunes64Setup.exe
+
 2. Download `ipaversion` from [Releases](./releases) page.
+
 3. Generate your own CA cert and put into `~/.mitmproxy` , **OR** just start `ipaversion` and it will generate a new one.
+
 4. Trust the CA cert. (Read mitmproxy docs [About Certificates](https://docs.mitmproxy.org/stable/concepts-certificates/) for more information)
 
-- macOS
+   - macOS
 
-```shell
-sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain ~/.mitmproxy/mitmproxy-ca-cert.pem
-```
+   ```shell
+   sudo security add-trusted-cert -d -p ssl -p basic -k /Library/Keychains/System.keychain ~/.mitmproxy/mitmproxy-ca-cert.pem
+   ```
 
-- Windows
+   - Windows
 
-```shell
-certutil -addstore root mitmproxy-ca-cert.cer
-```
+   ```shell
+   certutil -addstore root mitmproxy-ca-cert.cer
+   ```
 
 Now you are ready to GO!
 
@@ -74,5 +78,4 @@ options
 - [x] Add `-c` option for cleanup. (e.g. turn off system proxy)
 - [x] Add `-s` option: do not set system proxy.
 - [x] Query a given range of the history versions.
-- [ ] Enter index number to download the `ipa` (TODO: still working on generating `iTunesMetadata.plist`).
-
+- [x] Enter index number to download `ipa` file.
