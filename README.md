@@ -2,8 +2,14 @@
 
 MITM utility for querying & downloading history versions of iOS apps.
 
+- Query history versions
+
 
 ![ipaversion_001](_image/ipaversion_01.jpg)
+
+- Select one to download
+
+![ipaversion_02](_image/ipaversion_02.jpg)
 
 Download from [Releases](./releases) page.
 
