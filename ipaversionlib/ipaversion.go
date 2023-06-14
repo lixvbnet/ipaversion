@@ -27,25 +27,39 @@ type Addon struct {
 	counter				int64
 }
 
+type replayRequestInput struct {
+	Method, Url string
+	Header http.Header
+	Body []byte
+	LatestVersionID, TargetVersionID uint64
+	Index int
+	Client *http.Client
+}
+
 // replay the request with modified version ID
-func (c *Addon) replayRequest(method, url string, header http.Header, body []byte, latestVersionID, targetVersionID uint64, i int, client *http.Client) {
+func (c *Addon) replayRequest(in *replayRequestInput, retry int) {
 	defer func() {
 		if err := recover(); err != nil {
-			fmt.Printf("[WARN] Recovered from replayRequest [%d] %v: %v\n", i, targetVersionID, err)
+			fmt.Printf("[WARN] Recovered from replayRequest [%d] %v: %v.", in.Index, in.TargetVersionID, err)
+			if retry > 0 {
+				fmt.Printf(" Retrying...")
+				c.replayRequest(in, retry-1)
+			}
+			fmt.Println()
 		}
 	}()
 	atomic.AddInt64(&c.counter, 1)
 	// clone the request for every versionID
-	headerClone := maps.Clone(header)
-	bodyClone := bytes.Clone(body)
+	headerClone := maps.Clone(in.Header)
+	bodyClone := bytes.Clone(in.Body)
 	// modify the cloned request
-	strOld := fmt.Sprintf("<string>%v</string>", latestVersionID)
-	strNew := fmt.Sprintf("<string>%v</string>", targetVersionID)
+	strOld := fmt.Sprintf("<string>%v</string>", in.LatestVersionID)
+	strNew := fmt.Sprintf("<string>%v</string>", in.TargetVersionID)
 	bodyClone = bytes.ReplaceAll(bodyClone, []byte(strOld), []byte(strNew))
-	reqClone, _ := http.NewRequest(method, url, bytes.NewReader(bodyClone))
+	reqClone, _ := http.NewRequest(in.Method, in.Url, bytes.NewReader(bodyClone))
 	reqClone.Header = headerClone
 
-	resp, _ := client.Do(reqClone)
+	resp, _ := in.Client.Do(reqClone)
 
 	// handle the response
 	resBodyDecoded, err := GzipDecodeReader(resp.Body)
@@ -62,7 +76,7 @@ func (c *Addon) replayRequest(method, url string, header http.Header, body []byt
 		log.Panicln("Failed to parse the app info:", err)
 	}
 	c.HistoryVersions = append(c.HistoryVersions, appInfo)
-	fmt.Printf("[%d] %v %s\n", i, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
+	fmt.Printf("[%d] %v %s\n", in.Index, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
 	//err = os.WriteFile("ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
 	//if err != nil {
@@ -144,7 +158,16 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	fmt.Println()
 	for i := start; i < end; i++ {
 		versionID := versionIDs[i]
-		c.replayRequest(req.Method, req.URL.String(), headerCopy, bodyCopy, latestAppInfo.SoftwareVersionExternalIdentifier, versionID, i, client)
+		c.replayRequest(&replayRequestInput{
+			Method:          req.Method,
+			Url:             req.URL.String(),
+			Header:          headerCopy,
+			Body:            bodyCopy,
+			LatestVersionID: latestAppInfo.SoftwareVersionExternalIdentifier,
+			TargetVersionID: versionID,
+			Index:           i,
+			Client:          client,
+		}, 3)
 	}
 
 	fmt.Println("---------------------------------------")
