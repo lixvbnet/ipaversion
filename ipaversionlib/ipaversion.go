@@ -42,10 +42,11 @@ func (c *Addon) replayRequest(in *replayRequestInput, retry int) {
 		if err := recover(); err != nil {
 			fmt.Printf("[WARN] Recovered from replayRequest [%d] %v: %v.", in.Index, in.TargetVersionID, err)
 			if retry > 0 {
-				fmt.Printf(" Retrying...")
+				fmt.Println(" Retrying...")
 				c.replayRequest(in, retry-1)
+			} else {
+				fmt.Println()
 			}
-			fmt.Println()
 		}
 	}()
 	atomic.AddInt64(&c.counter, 1)
