@@ -28,12 +28,13 @@ type Addon struct {
 }
 
 type replayRequestInput struct {
-	Method, Url string
-	Header http.Header
-	Body []byte
+	Method, Url                      string
+	Header                           http.Header
+	Body                             []byte
 	LatestVersionID, TargetVersionID uint64
-	Index int
-	Client *http.Client
+	Index                            int // The index in all versionIDs
+	ActualIndex                      int // The actual index in the filtered query result HistoryVersions
+	Client                           *http.Client
 }
 
 // replay the request with modified version ID
@@ -77,7 +78,7 @@ func (c *Addon) replayRequest(in *replayRequestInput, retry int) {
 		log.Panicln("Failed to parse the app info:", err)
 	}
 	c.HistoryVersions = append(c.HistoryVersions, appInfo)
-	fmt.Printf("[%d] %v %s\n", in.Index, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
+	fmt.Printf("(%d) [%d] %v %s\n", in.ActualIndex, in.Index, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
 	//err = os.WriteFile("ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
 	//if err != nil {
@@ -134,7 +135,7 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	fmt.Println("Latest version:\t\t", latestAppInfo.SoftwareVersionExternalIdentifier, latestAppInfo.BundleShortVersionString)
 	// get all history versionIDs
 	versionIDs := latestAppInfo.SoftwareVersionExternalIdentifiers
-	fmt.Println("History versionIDs:\t", versionIDs)
+	fmt.Printf("History versionIDs:\t%v (Total: %d)\n", versionIDs, len(versionIDs))
 
 	// calculate index range
 	n := len(versionIDs)
@@ -143,9 +144,9 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 		start = n + start
 	}
 	if end < 0 {
-		end = n + start
+		end = n + end
 	}
-	start, end = max(0, c.Start), min(n, c.End)
+	start, end = max(0, start), min(n, end)
 	if start != 0 || end != n {						// check custom index range
 		fmt.Printf("Index range: [%d, %d)\n", start, end)
 		if start >= end {
@@ -157,8 +158,9 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 	// replay the request
 	fmt.Println("Replaying the request...")
 	fmt.Println()
-	for i := start; i < end; i++ {
-		versionID := versionIDs[i]
+	i := 0
+	for index := start; index < end; index++ {
+		versionID := versionIDs[index]
 		c.replayRequest(&replayRequestInput{
 			Method:          req.Method,
 			Url:             req.URL.String(),
@@ -166,9 +168,11 @@ func (c *Addon) handleBuyRequest(f *proxy.Flow) {
 			Body:            bodyCopy,
 			LatestVersionID: latestAppInfo.SoftwareVersionExternalIdentifier,
 			TargetVersionID: versionID,
-			Index:           i,
+			Index:           index,
+			ActualIndex:     i,
 			Client:          client,
 		}, 3)
+		i++
 	}
 
 	fmt.Println("---------------------------------------")

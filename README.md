@@ -50,6 +50,19 @@ Now you are ready to GO!
 4. Go back to iTunes and click Download button.
 5. `ipaversion` will intercept the request and use it to get history versions.
 
+> **Note:** By default, `ipaversion` will get *all* history versions. If you only want to query a subset of those versions, specify `-start` and/or `-end` flags:
+>
+> ```shell
+> # query a given range of versions: versionIDs[10..20)
+> ipaversion -start 10 -end 20
+> # query first(oldest) 5 versions: versionsIDs[0..5)
+> ipaversion -end 5
+> 
+> # A negative value means counting from last, for example:
+> # query last(latest) 5 versions
+> ipaversion -start -5
+> ```
+
 
 
 ## help
@@ -79,3 +92,12 @@ options
 - [x] Add `-s` option: do not set system proxy.
 - [x] Query a given range of the history versions.
 - [x] Enter index number to download `ipa` file.
+
+
+
+## thanks
+
+- [mitmproxy](https://mitmproxy.org/) An interactive TLS-capable intercepting HTTP proxy for penetration testers and software developers.
+- [go-mitmproxy](https://github.com/lqqyt2423/go-mitmproxy) mitmproxy implemented with golang.
+- [sysproxy](https://github.com/lixvbnet/sysproxy) Go library and CLI tool for setting system proxy.
+
