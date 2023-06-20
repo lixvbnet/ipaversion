@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"github.com/lixvbnet/ipaversion/ipaversionlib"
@@ -12,8 +13,10 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"syscall"
+	"unicode"
 )
 
 const Version = "v0.2.0"
@@ -128,43 +131,94 @@ func main() {
 		turnOffProxy()
 	}
 
-	// Let user select one to download
-	var input string
-	for {
-		fmt.Printf("Enter index number to download, or enter -1 to exit: ")
-		_, err := fmt.Scanln(&input)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		selectedIndex, err := strconv.Atoi(input)
-		if err != nil {
-			fmt.Println("Invalid input.")
-			continue
-		}
-
-		if selectedIndex < 0 {
-			break
-		}
-		historyVersions, clientUserAgent := addon.HistoryVersions, addon.ClientUserAgent
-		if selectedIndex >= len(historyVersions) {
-			fmt.Println("Invalid input: index out of range.")
-			continue
-		}
-
-		selectedVersion := historyVersions[selectedIndex]
-		filename, err := ipaversion.DownloadApp(selectedVersion, clientUserAgent)
-		if err != nil {
-			fmt.Println("[ERROR]", err)
-			continue
-		}
-		fmt.Printf("File [%s] saved.\n", filename)
-		break
-	}
+	// Let user input an index number to download, or other commands
+	handleInput(addon)
 
 	// Exit when click Enter
 	fmt.Printf("Press [Enter] to quit: ")
 	_, _ = fmt.Scanln()
+}
+
+
+var availableCommands = [][2]string{
+	{"?", 				"show help message"},
+	{"exit", 			"exit"},
+	{"d|dump <index>", 	"dump response data (of the given index) to file"},
+}
+
+func printAvailableCommands() {
+	fmt.Println("Available commands:")
+	for _, cmd := range availableCommands {
+		fmt.Printf("%-20s %s\n", cmd[0], cmd[1])
+	}
+}
+
+func handleInput(addon *ipaversion.Addon) {
+	historyVersions, clientUserAgent := addon.HistoryVersions, addon.ClientUserAgent
+	r := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Printf("Enter index number to download, or '?' for available commands: ")
+		input, err := r.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		input = strings.TrimSpace(input)
+
+		if unicode.IsDigit(rune(input[0])) {	// consider input is a number
+			selectedIndex, err := strconv.Atoi(input)
+			if err != nil {
+				fmt.Println("Invalid input.")
+				continue
+			}
+			if selectedIndex < 0 {
+				break
+			}
+			if selectedIndex >= len(historyVersions) {
+				fmt.Println("Invalid input: index out of range.")
+				continue
+			}
+			selectedVersion := historyVersions[selectedIndex]
+			filename, err := ipaversion.DownloadApp(selectedVersion, clientUserAgent)
+			if err != nil {
+				fmt.Println("[ERROR]", err)
+				continue
+			}
+			fmt.Printf("File [%s] saved.\n", filename)
+			break
+
+		} else {	// input is a command
+			arr := strings.Fields(input)
+			command := arr[0]
+			if command == "?" {
+				printAvailableCommands()
+				continue
+			} else if command == "exit" {
+				break
+			} else if command == "d" || command == "dump" {
+				if len(arr) < 2 {
+					printAvailableCommands()
+					continue
+				}
+				selectedIndex, err := strconv.Atoi(arr[1])
+				if err != nil || selectedIndex < 0 || selectedIndex >= len(historyVersions) {
+					fmt.Println("Invalid input or index out of range.")
+					continue
+				}
+				selectedVersion := historyVersions[selectedIndex]
+				filename := fmt.Sprintf("%s_%s_%v.xml", selectedVersion.BundleDisplayName, selectedVersion.BundleShortVersionString, selectedVersion.SoftwareVersionExternalIdentifier)
+				fmt.Printf("Saving response data to [%s]...\n", filename)
+				err = os.WriteFile(filename, selectedVersion.Data, 0744)
+				if err != nil {
+					fmt.Println("[ERROR]", err)
+					continue
+				}
+			} else {
+				fmt.Println("Unsupported command:", command)
+				continue
+			}
+		}
+	}
 }
 
 

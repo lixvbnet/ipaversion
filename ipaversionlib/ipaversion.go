@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -85,7 +84,8 @@ func (c *Addon) replayRequest(in *replayRequestInput, retry int) {
 	fmt.Printf("(%d) [%d] %v %s\n", in.ActualIndex, in.Index, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
 	if c.DumpResponses {
-		err = os.WriteFile(savedResponseDir+"/ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
+		filename := fmt.Sprintf("%s/ReplayResponse%v.xml", savedResponseDir, c.counter)
+		err = os.WriteFile(filename, resBodyDecoded, 0744)
 		if err != nil {
 			fmt.Println("[ERROR]", err)
 		}
@@ -216,7 +216,8 @@ func (c *Addon) Response(f *proxy.Flow) {
 	//	}
 	//	// write response body to file
 	//	if c.DumpResponses {
-	//		err = os.WriteFile(savedResponseDir+"/response"+strconv.Itoa(int(c.counter))+".xml", responseBodyDecoded, 0744)
+	//		filename := fmt.Sprintf("%s/response%v.xml", savedResponseDir, c.counter)
+	//		err = os.WriteFile(filename, responseBodyDecoded, 0744)
 	//		if err != nil {
 	//			fmt.Println("[ERROR]", err)
 	//		}
