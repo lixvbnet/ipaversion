@@ -1,6 +1,7 @@
 package ipaversion
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"io"
@@ -22,6 +23,19 @@ func max(x, y int) int {
 		return x
 	}
 	return y
+}
+
+func fileExists(filename string) (bool, error) {
+	if _, err := os.Stat(filename); err == nil {
+		// file exists
+		return true, nil
+	} else if errors.Is(err, os.ErrNotExist) {
+		// file does not exist
+		return false, nil
+	} else {
+		// unexpected error
+		return false, err
+	}
 }
 
 

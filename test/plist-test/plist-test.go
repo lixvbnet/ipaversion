@@ -24,9 +24,13 @@ func main() {
 	fmt.Println(string(appInfo.Data))
 
 	// download app
-	filename, err := ipaversion.DownloadApp(appInfo, "")
+	filename, exists, err := ipaversion.DownloadApp(appInfo, "", false)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("File [%s] saved\n", filename)
+	if exists {
+		fmt.Printf("File [%s] already exists. [Skip]\n", filename)
+	} else {
+		fmt.Printf("File [%s] saved\n", filename)
+	}
 }

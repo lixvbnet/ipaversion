@@ -72,9 +72,13 @@ $ ipaversion -h
 Usage: ipaversion [options]
 options
   -c    cleanup and exit. (e.g. turn off proxy)
+  -dump
+        dump responses to files
   -end int
         versionIDs index range [start, end) (default 9223372036854775807)
   -h    show help and exit
+  -i string
+        read the input file and download ipa
   -ps
         show current system proxy status
   -s    do not set system proxy

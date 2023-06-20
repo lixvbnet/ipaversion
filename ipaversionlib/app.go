@@ -42,32 +42,43 @@ func GetAppInfo(data []byte) (*AppInfo, error) {
 	return appInfo, nil
 }
 
-func DownloadApp(app *AppInfo, userAgent string) (filename string, err error) {
+func DownloadApp(app *AppInfo, userAgent string, overwrite bool) (filename string, exists bool, err error) {
 	filename = fmt.Sprintf("%s %s.ipa", app.BundleDisplayName, app.BundleShortVersionString)
+	exists = false
+	if !overwrite {
+		exists, err = fileExists(filename)
+		if err != nil {
+			return filename, exists, err
+		}
+		if exists {
+			return filename, exists, nil
+		}
+	}
+
 	//fmt.Printf("Direct link: %s\n", app.URL)
 	fmt.Printf("Downloading %s %s (%v) to file [%s]...\n", app.BundleDisplayName, app.BundleShortVersionString, app.SoftwareVersionExternalIdentifier, filename)
 	tmpFile := fmt.Sprintf("%s.downloading", filename)
 	// download raw ipa to tmp
 	err = DownloadFile(app.URL, tmpFile, userAgent)
 	if err != nil {
-		return filename, err
+		return filename, exists, err
 	}
 	// apply patches
 	fmt.Println("Apply patches...")
 	err = ApplyPatches(app.Metadata, tmpFile, filename)
 	if err != nil {
-		return filename, fmt.Errorf("Failed to apply patches: %v\n", err)
+		return filename, exists, fmt.Errorf("Failed to apply patches: %v\n", err)
 	}
 	// replicate sinfs
 	fmt.Println("Replicate sinfs...")
 	err = ReplicateSinf(app.Sinfs, filename)
 	if err != nil {
-		return filename, fmt.Errorf("Failed to replicate sinfs: %v\n", err)
+		return filename, exists, fmt.Errorf("Failed to replicate sinfs: %v\n", err)
 	}
 	fmt.Println("Remove tmp files...")
 	err = os.Remove(tmpFile)	// NOT working!
 	if err != nil {
-		return filename, fmt.Errorf("Failed to remove tmp file: %v\n", err)
+		return filename, exists, fmt.Errorf("Failed to remove tmp file: %v\n", err)
 	}
-	return filename, nil
+	return filename, exists, nil
 }

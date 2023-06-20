@@ -28,9 +28,11 @@ var (
 	V     = flag.Bool("v", false, "show version")
 	H     = flag.Bool("h", false, "show help and exit")
 
-	S     = flag.Bool("s", false, "do not set system proxy")
-	C     = flag.Bool("c", false, "cleanup and exit. (e.g. turn off proxy)")
+	I     = flag.String("i", "", "read the input file and download ipa")
+
 	PS    = flag.Bool("ps", false, "show current system proxy status")
+	C     = flag.Bool("c", false, "cleanup and exit. (e.g. turn off proxy)")
+	S     = flag.Bool("s", false, "do not set system proxy")
 
 	DUMP  = flag.Bool("dump", false, "dump responses to files")
 
@@ -57,6 +59,29 @@ func main() {
 
 	if *V {
 		fmt.Printf("%s version %s %s\n", Name, Version, GitHash)
+		return
+	}
+
+	if *I != "" {
+		fmt.Printf("Reading response data from [%s]...\n", *I)
+		data, err := os.ReadFile(*I)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appInfo, err := ipaversion.GetAppInfo(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// download app
+		filename, exists, err := ipaversion.DownloadApp(appInfo, "", false)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if exists {
+			fmt.Printf("File [%s] already exists. [Skip]\n", filename)
+		} else {
+			fmt.Printf("File [%s] saved\n", filename)
+		}
 		return
 	}
 
@@ -151,6 +176,7 @@ func printAvailableCommands() {
 	for _, cmd := range availableCommands {
 		fmt.Printf("%-20s %s\n", cmd[0], cmd[1])
 	}
+	fmt.Println()
 }
 
 func handleInput(addon *ipaversion.Addon) {
@@ -179,7 +205,7 @@ func handleInput(addon *ipaversion.Addon) {
 				continue
 			}
 			selectedVersion := historyVersions[selectedIndex]
-			filename, err := ipaversion.DownloadApp(selectedVersion, clientUserAgent)
+			filename, _, err := ipaversion.DownloadApp(selectedVersion, clientUserAgent, true)
 			if err != nil {
 				fmt.Println("[ERROR]", err)
 				continue
@@ -213,6 +239,7 @@ func handleInput(addon *ipaversion.Addon) {
 					fmt.Println("[ERROR]", err)
 					continue
 				}
+				fmt.Println()
 			} else {
 				fmt.Println("Unsupported command:", command)
 				continue
