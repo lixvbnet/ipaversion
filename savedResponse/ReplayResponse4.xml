@@ -12,7 +12,7 @@
 <array>
 <dict>
 <key>songId</key><integer>1565519310</integer>
-<key>URL</key><string>https://iosapps.itunes.apple.com/itunes-assets/Purple125/v4/bc/1e/7f/bc1e7f30-7d42-15dc-e3f2-a51000578c72/pre-thinned428916191817603225.lc.3738067879131186.HWER3ZIRA36MG.signed.dpkg.ipa?accessKey=1686249637_7086495216234753149_xNXGG3oRQj44iyl3WF9tsDSf%2FMBvX0EXvuNauO3HB9TOU7muYR83oL8C4bOXJjwR%2FQM73J4zTWzWYJzKXgWaXXeVDDvf6vP0fRT2mCcJJqWSnAQ%2BJaXgwSkp%2FHbyejCKAoUXaTlYPgxG%2BnE%2B0tA5BCCWP3ZwpcYTGY%2B%2BHzrvQyBICsiA1DYVI6OnyESXSs8CWc%2BeTEq%2BbpZ48sn12punq3kjX%2FKSLfAXHVJB67VNhniRDVJcTg4pFga3T%2Bm5ANzk</string>
+<key>URL</key><string>https://iosapps.itunes.apple.com/itunes-assets/Purple125/v4/4d/50/fb/4d50fbc8-6f5b-11b7-0242-ea0739230775/pre-thinned9042814209733995170.lc.5520385426437837.XROJJ2L7DPA5Q.signed.dpkg.ipa?accessKey=1687418650_4746249894070688903_LAi9aRa9IRhYNRrNjyz4DkKyWyKos34pbkbAiw9y2mxOSQLieTl0wFYFL2d1x7K7MRTwzi8RfamGCP%2B51MIF435hR0YrmDfublmQLNbh5k1Dnq1zbFWOnTRSe2uDXP3XI0FFfBFe2GkWST1p4doALBdX3thsHDVS21j32BD%2F9Ky3jDc7HO%2FNGM9MV04L70QaeoXTfdI9CssTxP7WWXirmMGSvofrNhDXbCMZiStJhcFHx%2Ffwl1GXkFrFVLuVHcdD</string>
 <key>downloadKey</key><string></string>
   <key>local-server-info</key>
   <dict>
@@ -27,24 +27,24 @@
 <string>https://is3-ssl.mzstatic.com/image/thumb/Purple122/v4/2e/a5/8c/2ea58ca4-9938-b337-0f53-6543a20a111e/AppIcon-0-0-1x_U007emarketing-0-0-0-10-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/57x57bb.jpg</string>
 </dict>
 </dict>
-<key>is-purchased-redownload</key><true/><key>md5</key><string>9d7900cb88c43872bd70e64352cdc1b2</string><key>chunks</key>
+<key>is-purchased-redownload</key><true/><key>md5</key><string>35371ceba5629b3e20253d7c00d73837</string><key>chunks</key>
 <dict>
 <key>chunkSize</key><integer>10485760</integer>
 <key>hashes</key>
 <array>
-<string>daff869d3ef0e0ea1e665ff875f4bf20</string>
-<string>84656d1fd577bcee18515e341c46ed56</string>
-<string>ce1c8e433af016edcb6c6bdab1a67e94</string>
+<string>45866785ba683569b9c6d9c01cc0de7c</string>
+<string>c560aa63aa46b4572b376ffdf8a04a8d</string>
+<string>25dc46a5dc33389559594591e360bf5e</string>
 </array>
 </dict>
 <key>isStreamable</key><true/>
-<key>uncompressedSize</key><integer>69926912</integer>
-<key>sinfs</key><array>  <dict>    <key>id</key>    <integer>0</integer>    <key>sinf</key>    <data>AAAEIHNpbmYAAAAMZnJtYWdhbWUAAAAUc2NobQAAAABpdHVuAAAAAAAAA3BzY2hpAAAADHVzZXJzt4F4AAAADGNyZHTgpNnFAAAADGFzZHQAAAAAAAAADGtleSAAAAAFAAAAGGl2aXbTTJqTOnx6Z4/5M7vVfUxVAAAAWHJpZ2h2ZUlEBxOmBHBsYXQAAAABYXZlcgEBAQB0cmFu4KTZxXNpbmcAAAAAc29uZ11P7c50b29sUDYwOW1lZGkAAACAbW9kZQAAIAAAAAAAAAAAAAAAAQhuYW1l6amsIOeQhuaDswAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcBwcml2Okp4oiNhQA/abtst5d3sjdZfcTHqAZLMPXMhR/jAlFIv2dFmBAGOGy4NYOSPkVKoJ63LFUogKnAGTYbylsnWb0f0DTEoJ/fZt3EQiQh/INmJeAggLYP14EbVS9+QscemCV/jaVif3TS7JaZpQ+MuxgOgl6+x5Utl0OM7k0jyXnJYjcZUTw9OCUg3kZ4qSOwlKNgplYT2Mu+1NhJzaZowzisloVMyNZfcq9iKj9GUVRXeGxWcUEc5kUraw/GhDg64zzt68XYPIx9YWP5DuOR/JYy/yb6/EgNikW08OXPQ1II+hZ8JQ6TORJUKFHZrRcOUZ86lf6StlOKJWXdgBd0JBBDZdli9yH5ju94e7pPMIGwejO27yLayjnkedpt4MxSq8/YpbW6VQwncNEfXme6ShUOk42/+6KZ3NT7zF7V72SE67KYKBT4LOT8AkLzmK7wqtrA7GF0k6707X7g3xDnLTl1/Vgu2Zzc+JBTKunmtWSvz1rHFxpVq6VsftTbodsZJY0wL4dJQrPcfLEfNIuvwg8pXAnmxWo64TlVkYu5GgM5+HCR5pnm8RmxcowxkG4LJAAAAAAAAAAAAAACIc2lnbi7bX4J3T18nMvPaH3ERY5OT/qaGN1B0V4zf7xWmZJHZNTSQhgVd82OAzZuX3vJ2OfOZa4gcuD30CYbW+EgDv7rKsnOo+SlwAQ5Q2ZCp/UkDh6wC/hKdVBEQ0AA5Pt+uvg6kK4pcwCwbn8IdP/ND9vv6YtH2K+gx9uL7awEdJqFU</data>  </dict></array><key>purchaseDate</key><string>2023-05-27T08:58:13Z</string>
-<key>download-id</key><string>J32N_C_320085958628795</string>
+<key>uncompressedSize</key><integer>60824576</integer>
+<key>sinfs</key><array>  <dict>    <key>id</key>    <integer>0</integer>    <key>sinf</key>    <data>AAAEIHNpbmYAAAAMZnJtYWdhbWUAAAAUc2NobQAAAABpdHVuAAAAAAAAA3BzY2hpAAAADHVzZXJzt4F4AAAADGNyZHTgtrA6AAAADGFzZHQAAAAAAAAADGtleSAAAAAFAAAAGGl2aXZfhuGUarLOwAD4FXdENfwBAAAAWHJpZ2h2ZUlEBxOmBHBsYXQAAAABYXZlcgEBAQB0cmFu4LawOnNpbmcAAAAAc29uZ11P7c50b29sUDYwOW1lZGkAAACAbW9kZQAAIAAAAAAAAAAAAAAAAQhuYW1l6amsIOeQhuaDswAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcBwcml2zwPkaniocsR8tX77PkNiXDhDcgmYOV+VkHrufEY1pd05ZRJiTSEuNtXyajuxHULX7OZbo4/LqvUBlxuEq8hqUehwteei+s7goWbSOtWL08h9na1LZTUxDDkSxcsXC8SFluFZbxvKao69hF95aJXpAsq7cvGx/lUdByAHYezLB8W4e4luHj1bdWdb9JXtVYGJLS9TV8si+USBIsmGEBP8ZPhxbzQtPiuCD3Rs8kgdBtWGA/3nM1GYVk4jyYQ2Y0hni2jBWZxm4ePGaWFllNf5kFao2mXhgazPm2Grbp2TJA81ECqGEIXDGW0WEJ45aBgjEUka9l6BjIyWvFo8xrtnFew5UR+JVsTXExYxIJiklwCWCHjkEdAcmbJ+aLTC23bt2qXU+GQy+Kbl8WurxHMGCxA/Is8JLoSI2BcsQlSGpvM3/YwpYn4ighGm/6H7J0Kd7IvoIEy8bGRWIVYwNl5GZ2hj6oK7u4gLOHAibB/YaZi90E/JfTceVRUJDj5cm65LnThf+Soho1qvjj1wfizTPWKIOysWo/FaqXub0XRA7KwxfuxVJJ99+GdEnWIbwe4lAAAAAAAAAAAAAACIc2lnbrGnhe+o4t98tsKOwGXjwFFCCoaqWMfWyx6Et1Ul7eDtpMBK8/3WjKTxoQhIufyN32kgx/6bHU/Bx4vMs67EOoyBecZ1iwQpKs5sjCoGfl934QjPUxLFgfU2rUONRjpu9KAWCGZLGFASoAnUj54/RoBAG++eFink5HIpsNVHENUg</data>  </dict></array><key>purchaseDate</key><string>2023-05-27T08:58:13Z</string>
+<key>download-id</key><string>J32N_C_320086028268533</string>
 
   <key>asset-info</key>
   <dict>
-    <key>file-size</key><integer>29346392</integer>
+    <key>file-size</key><integer>28676848</integer>
     <key>flavor</key><string>10:purple</string>
   </dict>
 <key>metadata</key><dict>
@@ -60,8 +60,8 @@
   <key>artistId</key><integer>1282065940</integer>
   <key>artistName</key><string>Opera Software AS</string>
   <key>bundleDisplayName</key><string>Opera</string>
-  <key>bundleShortVersionString</key><string>3.0.3</string>
-  <key>bundleVersion</key><string>5</string>
+  <key>bundleShortVersionString</key><string>3.1.2</string>
+  <key>bundleVersion</key><string>3</string>
   <key>copyright</key><string>&#169; Opera Software AS</string>
   <key>fileExtension</key><string>.app</string>
   <key>gameCenterEnabled</key><false/>
@@ -103,7 +103,7 @@
     <integer>4</integer>
   </array>
   <key>softwareVersionBundleId</key><string>com.opera.OperaTouch.tianxia</string>
-  <key>softwareVersionExternalIdentifier</key><integer>842023522</integer>
+  <key>softwareVersionExternalIdentifier</key><integer>842726114</integer>
   <key>softwareVersionExternalIdentifiers</key>
   <array>
     <integer>842023522</integer>
@@ -121,7 +121,7 @@
 
 <key>drmVersionNumber</key><integer>0</integer>
 <key>versionRestrictions</key><integer>16843008</integer>
-<key>storeCohort</key><string>10|date=1686054600000&amp;sf=143465&amp;pgtp=Search&amp;pgid=90ccb801-2776-43d5-ba42-c672898cedb1&amp;prpg=Genre_29099</string>
+<key>storeCohort</key><string>10|date=1687222800000&amp;sf=143465&amp;pgtp=Software&amp;pgid=1565519310&amp;prpg=Search_0d48e65d-b518-46b1-9e3e-39c13c913a39&amp;ctxt=App%20Store</string>
 <key>hasOrEverHasHadIAP</key><false/>
 </dict>
 
@@ -140,7 +140,7 @@
 
   <key>pliIds</key>
   <array>
-    <string>72086131511813</string>
+    <string>72086207528501</string>
   </array>
   <key>sapTypes</key>
   <array>
@@ -155,30 +155,58 @@
     <integer>1565519310</integer>
   </array>
   <key>price</key><real>0.00</real>
-  <key>priceType</key><string>SWUPD</string>
+  <key>priceType</key><string>STDRDL</string>
   <key>productTypes</key>
   <array>
     <string>C</string>
   </array>
   <key>mtApp</key><string>com.apple.iTunes</string>
   <key>mtClientId</key><string>3z25ufYNz5tfz4lAzBbezmZEtpFmj</string>
-  <key>mtEventTime</key><string>2023-06-06 12:40:34 Etc/GMT</string>
-  <key>mtPageId</key><string>90ccb801-2776-43d5-ba42-c672898cedb1</string>
-  <key>mtPageType</key><string>Search</string>
-  <key>mtPrevPage</key><string>Genre_29099</string>
-  <key>mtRequestId</key><string>3z25ufYNz5tfz4lAzBbezmZEtpFmjzLIK9R4XVzS11</string>
+  <key>mtEventTime</key><string>2023-06-20 01:24:03 Etc/GMT</string>
+  <key>mtPageContext</key><string>App Store</string>
+  <key>mtPageId</key><string>1565519310</string>
+  <key>mtPageType</key><string>Software</string>
+  <key>mtPrevPage</key><string>Search_0d48e65d-b518-46b1-9e3e-39c13c913a39</string>
+  <key>mtRequestId</key><string>3z25ufYNz5tfz4lAzBbezmZEtpFmjzLJ3LR20Pz1516</string>
   <key>mtTopic</key><string>xp_its_main</string>
   <key>currency</key><string>CNY</string>
-  <key>exchangeRateToUSD</key><real>0.1561</real>
   <key>extractedCommerceEvent_latestLineItem_sapType</key><string>3F</string>
-  <key>commerceEvent_purchase_priceType</key><string>SWUPD</string>
+  <key>commerceEvent_purchase_priceType</key><string>STDRDL</string>
   <key>commerceEvent_storeFrontId</key><string>143465</string>
   <key>extractedCommerceEvent_latestLineItem_adamId</key><string>1565519310</string>
   <key>extractedCommerceEvent_latestLineItem_currencyCodeISO3A</key><string>CNY</string>
   <key>commerceEvent_result_resultType</key><integer>0</integer>
   <key>extractedCommerceEvent_latestLineItem_amountPaid</key><real>0.00000</real>
-  <key>commerceEvent_flowType</key><integer>16</integer>
-  <key>commerceEvent_flowStep</key><integer>26</integer>
+  <key>commerceEvent_flowType</key><integer>17</integer>
+  <key>commerceEvent_flowStep</key><integer>27</integer>
+</dict>
+<key>subscriptionStatus</key>
+<dict>
+<key>music</key>
+<dict>
+<key>status</key><string>Disabled</string>
+<key>reason</key><string></string>
+<key>isAdmin</key><false/>
+<key>isNotEligibleForFreeTrial</key><false/>
+</dict>
+<key>terms</key>
+<array>
+<dict>
+<key>type</key><string>Store</string>
+<key>latestTerms</key><integer>22</integer>
+<key>agreedToTerms</key><integer>25</integer>
+<key>source</key><string>account</string>
+</dict>
+</array>
+<key>account</key>
+<dict>
+<key>isMinor</key><false/>
+<key>suspectUnderage</key><false/>
+</dict>
+<key>family</key>
+<dict>
+<key>hasFamily</key><false/>
+</dict>
 </dict>
 </dict>
 </plist>

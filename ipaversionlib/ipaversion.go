@@ -7,12 +7,15 @@ import (
 	"golang.org/x/exp/maps"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 )
 
 const targetUrlSubstr = "-buy.itunes.apple.com/WebObjects/MZBuy.woa/wa/buyProduct"
+const savedResponseDir = "savedResponse"
 
 type Addon struct {
 	proxy.BaseAddon
@@ -23,6 +26,7 @@ type Addon struct {
 	End					int
 	HistoryVersions 	[]*AppInfo		// This is query result. Do NOT change it from outside!
 	ClientUserAgent		string			// User-Agent extracted from client request headers. Do NOT change it from outside!
+	DumpResponses		bool			// Whether to dump replay responses to files
 
 	counter				int64
 }
@@ -80,10 +84,12 @@ func (c *Addon) replayRequest(in *replayRequestInput, retry int) {
 	c.HistoryVersions = append(c.HistoryVersions, appInfo)
 	fmt.Printf("(%d) [%d] %v %s\n", in.ActualIndex, in.Index, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
-	//err = os.WriteFile("ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
-	//if err != nil {
-	//	fmt.Println("[ERROR]", err)
-	//}
+	if c.DumpResponses {
+		err = os.WriteFile(savedResponseDir+"/ReplayResponse"+strconv.Itoa(int(c.counter))+".xml", resBodyDecoded, 0744)
+		if err != nil {
+			fmt.Println("[ERROR]", err)
+		}
+	}
 }
 
 func (c *Addon) handleBuyRequest(f *proxy.Flow) {
@@ -209,9 +215,11 @@ func (c *Addon) Response(f *proxy.Flow) {
 	//		fmt.Println("ERROR:", err)
 	//	}
 	//	// write response body to file
-	//	err = os.WriteFile("response"+strconv.Itoa(int(c.counter))+".xml", responseBodyDecoded, 0744)
-	//	if err != nil {
-	//		fmt.Println("[ERROR]", err)
+	//	if c.DumpResponses {
+	//		err = os.WriteFile(savedResponseDir+"/response"+strconv.Itoa(int(c.counter))+".xml", responseBodyDecoded, 0744)
+	//		if err != nil {
+	//			fmt.Println("[ERROR]", err)
+	//		}
 	//	}
 	//}
 }

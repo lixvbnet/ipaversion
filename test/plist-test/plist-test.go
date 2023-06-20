@@ -2,36 +2,31 @@ package main
 
 import (
 	"fmt"
-	"howett.net/plist"
+	ipaversion "github.com/lixvbnet/ipaversion/ipaversionlib"
 	"log"
 	"os"
 )
 
-type Sinf struct {
-	ID   int64  `plist:"id,omitempty"`
-	Data []byte `plist:"sinf,omitempty"`
-}
-
-type downloadItemResult struct {
-	HashMD5  string                 `plist:"md5,omitempty"`
-	URL      string                 `plist:"URL,omitempty"`
-	Sinfs    []Sinf                 `plist:"sinfs,omitempty"`
-	Metadata map[string]interface{} `plist:"metadata,omitempty"`
-}
-
-type downloadResult struct {
-	FailureType     string               `plist:"failureType,omitempty"`
-	CustomerMessage string               `plist:"customerMessage,omitempty"`
-	Items           []downloadItemResult `plist:"songList,omitempty"`
-}
-
 func main() {
-	data, _ := os.ReadFile("savedResponse/ReplayResponse3.xml")
+	data, _ := os.ReadFile("savedResponse/ReplayResponse1.xml")
 	fmt.Println(len(data))
-	var appInfo downloadResult
-	_, err := plist.Unmarshal(data, &appInfo)
+	//var downloadResult ipaversion.DownloadResult
+	//_, err := plist.Unmarshal(data, &downloadResult)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//fmt.Println(downloadResult.Items[0])
+
+	appInfo, err := ipaversion.GetAppInfo(data)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(appInfo)
+	fmt.Println(string(appInfo.Data))
+
+	// download app
+	filename, err := ipaversion.DownloadApp(appInfo, "")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("File [%s] saved\n", filename)
 }

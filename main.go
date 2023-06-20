@@ -29,6 +29,8 @@ var (
 	C     = flag.Bool("c", false, "cleanup and exit. (e.g. turn off proxy)")
 	PS    = flag.Bool("ps", false, "show current system proxy status")
 
+	DUMP  = flag.Bool("dump", false, "dump responses to files")
+
 	START = flag.Int("start", 0, "versionIDs index range [start, end)")
 	END   = flag.Int("end", math.MaxInt, "versionIDs index range [start, end)")
 )
@@ -107,6 +109,7 @@ func main() {
 		Done: done,
 		Start: *START,
 		End: *END,
+		DumpResponses: *DUMP,
 	}
 	p.AddAddon(addon)
 	// start proxy server

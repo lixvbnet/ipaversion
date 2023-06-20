@@ -9,6 +9,7 @@ import (
 // extracts most commonly used fields from metadata for easy access.
 type AppInfo struct {
 	*DownloadItemResult
+	Data								[]byte		// the original response data (gzip decoded)
 	BundleDisplayName					string		// ex. Opera
 	BundleShortVersionString			string		// ex. 3.0.4
 	SoftwareVersionExternalIdentifier	uint64		// ex. 842552350
@@ -29,6 +30,7 @@ func GetAppInfo(data []byte) (*AppInfo, error) {
 		versionIDs = append(versionIDs, tmpID.(uint64))
 	}
 	appInfo := &AppInfo{
+		Data:								data,
 		DownloadItemResult:                	item,
 		BundleDisplayName:                 	metadata["bundleDisplayName"].(string),
 		BundleShortVersionString:          	metadata["bundleShortVersionString"].(string),
