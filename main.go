@@ -7,6 +7,7 @@ import (
 	"github.com/lixvbnet/ipaversion/ipaversionlib"
 	"github.com/lixvbnet/sysproxy"
 	"github.com/lqqyt2423/go-mitmproxy/proxy"
+	"io"
 	"log"
 	"math"
 	"os"
@@ -45,6 +46,8 @@ func main() {
 		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [options]\n", Name)
 		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "options\n")
 		flag.PrintDefaults()
+		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "\ncommands\n")
+		printAvailableCommands(flag.CommandLine.Output())
 	}
 	flag.Parse()
 	if !flag.Parsed() {
@@ -171,12 +174,11 @@ var availableCommands = [][2]string{
 	{"d|dump <index>", 	"dump response data (of the given index) to file"},
 }
 
-func printAvailableCommands() {
-	fmt.Println("Available commands:")
+func printAvailableCommands(w io.Writer) {
+	//_, _ = fmt.Fprintln(w, "Available commands:")
 	for _, cmd := range availableCommands {
-		fmt.Printf("%-20s %s\n", cmd[0], cmd[1])
+		_, _ = fmt.Fprintf(w, "%-20s %s\n", cmd[0], cmd[1])
 	}
-	fmt.Println()
 }
 
 func handleInput(addon *ipaversion.Addon) {
@@ -217,13 +219,15 @@ func handleInput(addon *ipaversion.Addon) {
 			arr := strings.Fields(input)
 			command := arr[0]
 			if command == "?" {
-				printAvailableCommands()
+				printAvailableCommands(os.Stdout)
+				fmt.Println()
 				continue
 			} else if command == "exit" {
 				break
 			} else if command == "d" || command == "dump" {
 				if len(arr) < 2 {
-					printAvailableCommands()
+					printAvailableCommands(os.Stdout)
+					fmt.Println()
 					continue
 				}
 				selectedIndex, err := strconv.Atoi(arr[1])

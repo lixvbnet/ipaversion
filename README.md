@@ -65,10 +65,21 @@ Now you are ready to GO!
 
 
 
+## dump to files
+
+In case that network is unstable for "select index and download", you can specify `-dump` flag to have `ipaversion` dump *all* the replay responses to files for later use.
+
+Alternatively, upon entering index/commands, input `dump <index>` or just `d <index>` to dump *one* replay response to file.
+
+With a response file, run `ipaversion -i <response-file>` to download `ipa`.
+
+> **Note:** the response file may only be valid for several days (a week or so).
+
+
+
 ## help
 
 ```shell
-$ ipaversion -h
 Usage: ipaversion [options]
 options
   -c    cleanup and exit. (e.g. turn off proxy)
@@ -85,6 +96,11 @@ options
   -start int
         versionIDs index range [start, end)
   -v    show version
+
+commands
+?                    show help message
+exit                 exit
+d|dump <index>       dump response data (of the given index) to file
 ```
 
 
