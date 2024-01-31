@@ -1,6 +1,6 @@
 # ipaversion
 
-MITM utility for querying & downloading history versions of iOS apps.
+Man-In-The-Middle agent for querying & downloading history versions of iOS apps.
 
 - Query history versions
 
@@ -20,7 +20,7 @@ MITM utility for querying & downloading history versions of iOS apps.
    - macOS: https://secure-appldnld.apple.com/itunes12/091-87821-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A/iTunes12.6.5.dmg
    - Windows: https://secure-appldnld.apple.com/itunes12/091-87819-20180912-69177170-B085-11E8-B6AB-C1D03409AD2A6/iTunes64Setup.exe
 
-2. Download `ipaversion` from [Releases](./releases) page.
+2. Download `ipaversion` from [Releases](https://github.com/lixvbnet/ipaversion/releases) page.
 
 3. Generate your own CA cert and put into `~/.mitmproxy` , **OR** just start `ipaversion` and it will generate a new one.
 
