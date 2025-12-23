@@ -4,9 +4,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/lixvbnet/ipaversion/ipaversionlib"
-	"github.com/lixvbnet/sysproxy"
-	"github.com/lqqyt2423/go-mitmproxy/proxy"
 	"io"
 	"log"
 	"math"
@@ -18,9 +15,13 @@ import (
 	"sync"
 	"syscall"
 	"unicode"
+
+	ipaversion "github.com/lixvbnet/ipaversion/ipaversionlib"
+	"github.com/lixvbnet/sysproxy"
+	"github.com/lqqyt2423/go-mitmproxy/proxy"
 )
 
-const Version = "v0.2.0"
+const Version = "v0.2.1"
 
 var Name = filepath.Base(os.Args[0])
 var GitHash string

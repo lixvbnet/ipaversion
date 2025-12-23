@@ -3,14 +3,15 @@ package ipaversion
 import (
 	"bytes"
 	"fmt"
-	"github.com/lqqyt2423/go-mitmproxy/proxy"
-	"golang.org/x/exp/maps"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"github.com/lqqyt2423/go-mitmproxy/proxy"
+	"golang.org/x/exp/maps"
 )
 
 const targetUrlSubstr = "-buy.itunes.apple.com/WebObjects/MZBuy.woa/wa/buyProduct"
@@ -84,6 +85,7 @@ func (c *Addon) replayRequest(in *replayRequestInput, retry int) {
 	fmt.Printf("(%d) [%d] %v %s\n", in.ActualIndex, in.Index, appInfo.SoftwareVersionExternalIdentifier, appInfo.BundleShortVersionString)
 	// write the response body to file
 	if c.DumpResponses {
+		os.MkdirAll(savedResponseDir, 0o755)
 		filename := fmt.Sprintf("%s/ReplayResponse%v.xml", savedResponseDir, c.counter)
 		err = os.WriteFile(filename, resBodyDecoded, 0744)
 		if err != nil {
